@@ -1,9 +1,12 @@
 services:
   web:
-    image: bookreadermngrweb:latest
+    image: ${IMAGE_REF}
     build:
       context: ./
       target: runner
+      x-bake:
+        platforms:
+          - linux/amd64
     command: npm start
     ports:
       - "3000:3000"
