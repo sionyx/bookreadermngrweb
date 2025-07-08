@@ -1,6 +1,6 @@
 services:
   web:
-    image: bookreadermngrweb:latest
+    image: ${IMAGE_REF}
     build:
       context: ./
       target: runner
