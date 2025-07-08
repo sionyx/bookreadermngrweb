@@ -1,0 +1,23 @@
+services:
+  web:
+    image: bookreadermngrweb:latest
+    build:
+      context: ./
+      target: runner
+    command: npm start
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+  dev:
+    image: bookreadermngrweb:latest
+    build:
+      context: ./
+      target: runner
+    volumes:
+      - .:/app
+    command: npm run dev
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: development
