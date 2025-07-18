@@ -5,11 +5,18 @@ import {
 } from 'vanilla-jsoneditor';
 import { useEffect, useRef } from 'react';
 import './VanillaJSONEditor.css';
+import { useHotkeys } from 'react-hotkeys-hook';
 
-export default function SvelteJSONEditor(props: JSONEditorPropsOptional) {
+interface DivJSONEditorPropsOptional extends JSONEditorPropsOptional {
+  onSave: () => void;
+}
+
+export default function SvelteJSONEditor(props: DivJSONEditorPropsOptional) {
   const refContainer = useRef<HTMLDivElement | null>(null);
   const refEditor = useRef<JsonEditor | null>(null);
   const refPrevProps = useRef<JSONEditorPropsOptional>(props);
+
+  useHotkeys('meta+s', () => props.onSave(), { enableOnContentEditable: true, preventDefault: true });
 
   useEffect(() => {
     // create editor
@@ -27,7 +34,9 @@ export default function SvelteJSONEditor(props: JSONEditorPropsOptional) {
         refEditor.current = null;
       }
     };
-  }, [props]);
+  // тут props добавлять нельзя
+// eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // update props
   useEffect(() => {
