@@ -14,7 +14,6 @@ import { LeafJSONParser, purifyJson } from './LeafJSONParser';
 import { validateDivKit } from './DivKitValidator';
 import { useRouter } from 'next/navigation';
 
-
 interface ITemplateEditState {
   content: Content
   loading: boolean
@@ -24,7 +23,6 @@ interface ITemplateEditState {
   show_delete: boolean
   deleting: boolean
   delete_error?: IError
-
 }
 
 interface ITemplateEditProps {
@@ -134,6 +132,7 @@ class TemplateEdit extends Component<ITemplateEditProps, ITemplateEditState> {
                     onSelect={ this.onSelect }
                     onRenderValue={ onRenderValue }
                     onChange={(c) => { this.setState({ content: c, saved: false}) } }
+                    onSave={this.save}
                   />
                 </Card.Body>
                 <Card.Footer className="p-2 text-muted">
@@ -184,7 +183,6 @@ class TemplateEdit extends Component<ITemplateEditProps, ITemplateEditState> {
             </Button>
           </Modal.Footer>
         </Modal>
-        
       </>
     )
   }

@@ -7,6 +7,7 @@ import { Buttons } from '@/components/Buttons'
 import { AuthorForm } from '@/components/AuthorForm';
 import { useRouter } from 'next/navigation'
 import { fetchAPI } from '@/components/API/fetchAPI';
+import { SaveHook } from '@/components/SaveHook';
 
 interface IEditAuthorState {
   author: IAuthor
@@ -70,6 +71,8 @@ class NewAuthor extends Component<IEditAuthorProps, IEditAuthorState> {
             </Col>
           </Row>
         </Container>      
+
+        <SaveHook onSave={this.save} />
       </>
     )
   }

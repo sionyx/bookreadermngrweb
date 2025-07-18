@@ -8,6 +8,7 @@ import { AuthorForm } from '@/components/AuthorForm';
 import { fetchAPI } from '@/components/API/fetchAPI';
 //import { withRouter, NextRouter } from 'next/router'
 import { useParams } from 'next/navigation'
+import { SaveHook } from '@/components/SaveHook';
 
 
 interface IEditAuthorState {
@@ -91,6 +92,8 @@ class EditAuthor extends Component<IEditAuthorProps, IEditAuthorState> {
             </Col>
           </Row>
         </Container>      
+
+        <SaveHook onSave={this.save} />
       </>
     )
   }

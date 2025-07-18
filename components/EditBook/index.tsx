@@ -7,6 +7,7 @@ import { BookForm } from '@/components/BookForm'
 import { Buttons } from '@/components/Buttons'
 import { fetchAPI } from '@/components/API/fetchAPI';
 import { useRouter } from 'next/navigation';
+import { SaveHook } from '@/components/SaveHook';
 
 interface IBookState {
   book?: IBook
@@ -131,6 +132,8 @@ class Book extends Component<IBookProps, IBookState> {
             </Col>
           </Row>
         </Container>      
+
+        <SaveHook onSave={this.save} />
       </>
     )
   }

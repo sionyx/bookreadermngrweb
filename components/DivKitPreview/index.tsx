@@ -124,22 +124,12 @@ export class DivKitPreview extends Component<IPreviewProps, IPreviewState> {
     const sizes = this.getSizes(size, isTablet)
 
     return {
-      user_name: "DivKit User",
-      user_email: "divkit@mail.ru",
-      is_pro_status: false,
-      qouta_used: "2.34Gb",
-      qouta_available: "5.66Gb",
-      qouta_total: "8Gb",
-      has_tariff_promo: false,
-      is_auto_upload: false,
-      app_locker_enabled: false,
-
       screen_width: sizes.width,
       screen_height: sizes.height,
-      safeArea_inset_top: sizes.marginTop,
-      safeArea_inset_bottom: 0,
-      interface_orientation_isLandscape: false,
-      is_iPad: isTablet
+      safearea_top: sizes.marginTop,
+      safearea_bottom: 0,
+      is_landscape: false,
+      is_tablet: isTablet
     } as DivKitVariables
   }
 
