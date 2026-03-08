@@ -13,7 +13,7 @@ export interface ISection {
 export interface IShortBook {
   id: string
   section: string
-  author: string
+  user: string
   title: string
   coverUrl: string
 }
@@ -28,15 +28,18 @@ export interface IBook {
   id?: string
   sectionId: string
   authorId: string
+  userId: string
   title: string
   description: string
   template: string
   textLink: string
-  mediaUrl: string
   previewUrl: string
   coverUrl: string
-  duration: number
   publishDate: number
+  createDate?: number
+  updateDate?: number
+  roles: IRole[]
+  chapters: IChapter[]
 }
 
 export interface IAuthor {
@@ -51,4 +54,44 @@ export interface IAuthor {
 export interface IError {
   error: boolean,
   reason: string
+}
+
+export interface IUser {
+  id?: string
+  login: string
+  pass?: string
+  photoUrl: string
+  link: string
+  description: string
+}
+
+export interface IRole {
+    id?: string
+    bookId?: string
+    authorId: string
+    type: string
+    author?: IAuthor
+}
+
+export interface IPageMetadata {
+  page: number
+  per: number
+  total: number
+}
+
+export interface IPage<T> {
+  items: [T]
+  metadata: IPageMetadata
+}
+
+export interface IChapter {
+  id?: string
+  bookId?: string 
+  title: string
+  coverUrl?: string
+  previewUrl?: string
+  mediaUrl: string
+  publishDate?: number
+  link?: string
+  description?: string
 }

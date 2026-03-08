@@ -1,16 +1,16 @@
 'use client'
 import { Component } from 'react';
-import { Container, Row, Col, Card, Stack, Spinner, Breadcrumb, Alert, Modal, Button } from 'react-bootstrap';
+import { Container, Row, Col, Card, Spinner, Stack, Breadcrumb, Alert, Modal, Button } from 'react-bootstrap';
 import { BookReadNavbar, NavigationPage } from '@/components/BookReadNavbar';
-import { IBook, ISection, IError } from '@/components/models';
-import { BookForm } from '@/components/BookForm'
+import { ISection, ISectionContent, IError } from '@/components/models';
 import { Buttons } from '@/components/Buttons'
+import { SectionForm } from '@/components/SectionForm';
 import { fetchAPI } from '@/components/API/fetchAPI';
-import { useRouter } from 'next/navigation';
 import { SaveHook } from '@/components/SaveHook';
+import { useRouter } from 'next/navigation';
 
-interface IBookState {
-  book?: IBook
+interface ISectionState {
+  section: ISection
   path: ISection[]
   saved: boolean
   loading: boolean
@@ -21,15 +21,15 @@ interface IBookState {
   delete_error?: IError
 }
 
-interface IBookProps {
-  book?: string
+interface ISectionProps {
   section?: string
+  parent?: string
   navigeteTo: (url: string) => void
 }
 
-class Book extends Component<IBookProps, IBookState> {
+class Section extends Component<ISectionProps, ISectionState> {
   state = {
-    book: {} as IBook,
+    section: {} as ISection,
     path: [] as ISection[],
     saved: true,
     loading: true,
@@ -39,33 +39,21 @@ class Book extends Component<IBookProps, IBookState> {
     deleting: false,
     delete_error: undefined as (IError | undefined)
   }
-  
-  load = async () => {
-    if (this.props.book) {
-      this.setState({ loading: true })
-      const data = await fetchAPI('GET', `/books/${this.props.book}`)
-      const book = await data.json() as IBook
 
-      if (book) {
-        this.setState({ book: book, loading: false })
-        this.loadPath(book.sectionId)
-      }
+  load = async () => {
+    if (this.props.section == undefined) {
+      this.setState({ section: { parentId: this.props.parent, template: '', bookTemplate: '' } as ISection, loading: false })
+
+      return
     }
-    else {
-      this.setState({ book: {
-        sectionId: this.props.section ?? '',
-        userId: '',
-        authorId: '00000000-0000-0000-0000-000000000000',
-        title: '',
-        description: '',
-        template: '',
-        textLink: '',
-        previewUrl: '',
-        coverUrl: '',
-        publishDate: 0,
-        roles: [],
-        chapters: []
-      }, loading: false })
+
+
+    const data = await fetchAPI('GET', `/sections/${this.props.section}`)
+    const content = await data.json() as ISectionContent
+
+    if (content) {
+      this.setState({ section: content.section, loading: false })
+      this.loadPath(content.section.parentId)
     }
   }
 
@@ -79,18 +67,16 @@ class Book extends Component<IBookProps, IBookState> {
   save = async () => {
     this.setState({ saving: true })
 
-    const isNew = this.state.book.id == undefined
-    console.log(this.state.book)
-
+    const isNew = this.state.section.id == undefined
     const response = isNew 
-      ? await fetchAPI('POST', `/books`, this.state.book)
-      : await fetchAPI('PUT', `/books/${this.state.book.id}`, this.state.book)
+      ? await fetchAPI('POST', `/sections`, this.state.section)
+      : await fetchAPI('PUT', `/sections/${this.state.section.id}`, this.state.section)
     
     if (response.ok) {
-      const book = await response.json() as IBook
-      this.setState({ saving: false, saved: true, book: book, error: undefined })
+      const section = await response.json() as ISection
+      this.setState({ saving: false, saved: true, section: section, error: undefined })
       if (isNew) {
-        this.props.navigeteTo(`/books/${book.id}`)
+        this.props.navigeteTo(`/sections/${section.id}/edit`)
       }
     }
     else {
@@ -100,20 +86,17 @@ class Book extends Component<IBookProps, IBookState> {
   }
 
   delete = async () => {
-    if (this.state.book.id == undefined) {
-      return
-    }
     this.setState({ deleting: true })
 
-    const response = await fetchAPI('DELETE', `/books/${this.state.book.id}`);
+    const response = await fetchAPI('DELETE', `/sections/${this.state.section.id}`);
     if (response.ok) {
       this.setState({ deleting: false, delete_error: undefined, show_delete: false })
-      this.props.navigeteTo(`/sections/${ this.state.book.sectionId }`)
+      this.props.navigeteTo(`/sections/${ this.state.section.parentId }`)
     }
     else {
       const error = await response.json() as IError
       this.setState({ deleting: false, delete_error: error })
-    }
+    }    
   }
 
   public componentDidMount() {
@@ -135,28 +118,20 @@ class Book extends Component<IBookProps, IBookState> {
                     { this.state.path.map((section) => (
                       <Breadcrumb.Item key={ "sections_"+section.id } href={ "/sections/"+section.id }>{ section.title }</Breadcrumb.Item>
                     ))}
-                    { this.state.book.title && <Breadcrumb.Item active>{ this.state.book.title }</Breadcrumb.Item> }
+                    { this.state.section.title && <Breadcrumb.Item active>{ this.state.section.title }</Breadcrumb.Item> }
                   </Breadcrumb>
                 </Card.Header>
                 <Card.Body>
-                  <BookForm 
-                    book={ this.state.book } 
-                    onChange={ (b) => { this.setState({ saved: false, book: b }) } }
-                    onError={ (e) => console.log(e) } />
-                </Card.Body>
+                  <SectionForm parentEditable={ this.state.section.parentId != undefined } section={ this.state.section } onChange={ (s) => { this.setState({ saved: false, section: s }) } } />
+               </Card.Body>
                 <Card.Footer className="p-2 text-muted">
                   <Stack direction="horizontal" gap={2}>
                     { this.state.loading && ( <Spinner animation="border" /> )}
-                    { this.state.error && ( 
-                      <Alert className='m-0 p-2' variant='danger'>
-                        Ошибка: { this.state.error.reason }
-                      </Alert>
-                    )}
                     <Buttons className="ms-auto"
                       saving={ this.state.saving } 
-                      saved={ this.state.saved }
+                      saved={ this.state.saved } 
                       onSave={ this.save }
-                      onDelete={ this.state.book.id != undefined ? () => this.setState({ show_delete: true }) : undefined } />
+                      onDelete={ this.state.section.id != undefined ? () => this.setState({ show_delete: true }) : undefined } />
                   </Stack>
                 </Card.Footer>
               </Card>
@@ -166,10 +141,10 @@ class Book extends Component<IBookProps, IBookState> {
 
         <Modal show={ this.state.show_delete } onHide={ () => this.setState({ show_delete: false })}>
           <Modal.Header closeButton>
-            <Modal.Title>Удаление книги</Modal.Title>
+            <Modal.Title>Удаление раздела</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            Вы уверены, что хотите удалить книгу &quot;{ this.state.book.title }&quot;?
+            Вы уверены, что хотите удалить раздел &quot;{ this.state.section.title }&quot;?
           </Modal.Body>
           <Modal.Footer>
             { this.state.deleting && ( <Spinner animation="border" /> )}
@@ -193,12 +168,12 @@ class Book extends Component<IBookProps, IBookState> {
   }
 }
 
-interface IEditBookProps {
-  book?: string
+interface IEditSectionProps {
   section?: string
+  parent?: string
 }
 
-export function EditBook(props: IEditBookProps) {
+export function EditSection(props: IEditSectionProps) {
   const router = useRouter()
-  return <Book book={ props.book } section={ props.section } navigeteTo={ (url) => { router.push(url) } } />
+  return <Section section={ props.section } parent={ props.parent } navigeteTo={ (url) => { router.push(url) } } />
 }

@@ -2,15 +2,15 @@
 import { Component } from 'react';
 import { Container, Row, Col, Form, Stack, Card, Spinner, InputGroup, Pagination } from 'react-bootstrap';
 import { BookReadNavbar, NavigationPage } from '@/components/BookReadNavbar';
-import { IAuthor, IPage, IPageMetadata } from '@/components/models';
-import { AuthorsContent } from '@/components/AuthorsContent';
+import { IUser, IPage, IPageMetadata } from '@/components/models';
+import { UsersContent } from '@/components/UsersContent';
 import { fetchAPI } from '@/components/API/fetchAPI';
 import { addBasePath } from 'next/dist/client/add-base-path';
 
 
 
-interface IAuthorsState {
-  authors: IAuthor[]
+interface IUsersState {
+  users: IUser[]
   search: string
   page?: IPageMetadata
   loading: boolean
@@ -19,9 +19,9 @@ interface IAuthorsState {
 
 const pagesize = 25
 
-export default class Home extends Component<IAuthorsState> {
+export default class Home extends Component<IUsersState> {
   state = {
-    authors: [] as IAuthor[],
+    users: [] as IUser[],
     search: '',
     page: undefined as IPageMetadata | undefined,
     loading: true,
@@ -30,22 +30,22 @@ export default class Home extends Component<IAuthorsState> {
   
   load = async (index: number = 1) => {
     this.setState({ loading: true })
-    const result = await fetchAPI('GET', `/authors?page=${ index }&per=${ pagesize }`)
-    const page = await result.json() as IPage<IAuthor>
+    const result = await fetchAPI('GET', `/users?page=${ index }&per=${ pagesize }`)
+    const page = await result.json() as IPage<IUser>
 
     if (page) {
-      this.setState({ authors: page.items, page: page.metadata, loading: false})
+      this.setState({ users: page.items, page: page.metadata, loading: false})
     }
   }
 
   search = async (search: string, index: number = 1) => {
     this.setState({ search: search, loading: true })
 
-    const result = await fetchAPI('GET', `/authors/search?name=${ search }&page=${ index }&per=${ pagesize }`)
-    const page = await result.json() as IPage<IAuthor>
+    const result = await fetchAPI('GET', `/users/search?name=${ search }&page=${ index }&per=${ pagesize }`)
+    const page = await result.json() as IPage<IUser>
 
     if (page) {
-      this.setState({ authors: page.items, page: page.metadata, loading: false})
+      this.setState({ users: page.items, page: page.metadata, loading: false})
     }
   }
 
@@ -65,7 +65,7 @@ export default class Home extends Component<IAuthorsState> {
   public render() {
     return (
       <>
-        <BookReadNavbar page={ NavigationPage.authors } />
+        <BookReadNavbar page={ NavigationPage.users } />
 
         <Container className="px-0 mb-2" >
           <Row>
@@ -77,13 +77,13 @@ export default class Home extends Component<IAuthorsState> {
                   <InputGroup.Text id="basic-addon1">Поиск</InputGroup.Text>
                 <Form.Control 
                   type="text" 
-                  placeholder="по авторам" 
+                  placeholder="по пользователям" 
                   value={ this.state.search } 
                   onChange={ (e) => { this.search(e.target.value) } } />
                   </InputGroup>
               </Form.Group>
               </Card.Header>
-                <AuthorsContent authors={ this.state.authors } />
+                <UsersContent users={ this.state.users } />
                 <Card.Footer className="p-2 text-muted">
                   <Stack direction="horizontal" gap={2}>
                     <Pagination>
@@ -97,7 +97,7 @@ export default class Home extends Component<IAuthorsState> {
                       ))}
                     </Pagination>
                     { this.state.loading && (<Spinner animation="border" />)}
-                    <a className="btn btn-primary ms-auto" href={ addBasePath('/authors/new') }>Новый автор</a>
+                    <a className="btn btn-primary ms-auto" href={ addBasePath('/users/new') }>Новый пользователь</a>
                   </Stack>
                 </Card.Footer>
               </Card>

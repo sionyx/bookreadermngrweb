@@ -31,7 +31,9 @@ export class Buttons extends Component<IButtonsProps, object> {
           { this.props.onDelete && (
             <>
               <div className="vr" />
-              <Button variant="outline-danger" onClick={ this.props.onDelete } >Удалить</Button>
+              <Button 
+                variant="outline-danger" 
+                onClick={ this.props.onDelete }>Удалить</Button>
             </>
           ) }
           </span>

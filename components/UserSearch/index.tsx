@@ -1,50 +1,50 @@
 'use client'
 import { Component } from 'react';
 import { ListGroup, Stack, Form, Modal, Spinner, Row, InputGroup } from 'react-bootstrap';
-import { IAuthor, IPage } from '@/components/models';
+import { IUser, IPage } from '@/components/models';
 import { fetchAPI } from '@/components/API/fetchAPI';
 
-export interface IAuthorSearchProps {
+export interface IUserSearchProps {
   show: boolean
-  onSelect: (author: IAuthor) => void
+  onSelect: (user: IUser) => void
   onClose: () => void
 }
 
-export interface IAuthorSearchState {
+export interface IUserSearchState {
   query: string
   loading: boolean
-  authors: IAuthor[]
+  users: IUser[]
 }
 
 const pagesize = 10
 
-export class AuthorSearch extends Component<IAuthorSearchProps, IAuthorSearchState> {
+export class UserSearch extends Component<IUserSearchProps, IUserSearchState> {
   state = {
     query: '',
     loading: false,
-    authors: [] as IAuthor[],
+    users: [] as IUser[],
   }
 
   search = async (query: string) => {
     this.setState({ query: query, loading: true })
 
-    const result = await fetchAPI('GET', `/authors/search?name=${ query }&page=1&per=${ pagesize }`)
-    const page = await result.json() as IPage<IAuthor>
+    const result = await fetchAPI('GET', `/users/search?name=${ query }&page=1&per=${ pagesize }`)
+    const page = await result.json() as IPage<IUser>
 
     if (page) {
-      this.setState({ authors: page.items, loading: false})
+      this.setState({ users: page.items, loading: false})
     }
   }
-
+  
   public componentDidMount() {
     this.search('')
   }
-  
+
   public render() {
     return (
       <Modal show={ this.props.show } onHide={ this.props.onClose }>
         <Modal.Header closeButton>
-          <Modal.Title>Авторы</Modal.Title>
+          <Modal.Title>Пользователи</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form.Group as={Row} className="mb-1" >
@@ -52,7 +52,7 @@ export class AuthorSearch extends Component<IAuthorSearchProps, IAuthorSearchSta
               <InputGroup.Text id="basic-addon1">Поиск</InputGroup.Text>
               <Form.Control 
                 type="text" 
-                placeholder="по авторам" 
+                placeholder="по пользователям" 
                 value={ this.state.query } 
                 onChange={ (e) => { this.search(e.target.value) } } />
             </InputGroup>
@@ -60,10 +60,10 @@ export class AuthorSearch extends Component<IAuthorSearchProps, IAuthorSearchSta
 
           { this.state.loading && (<Spinner animation="border" />)}
           <ListGroup >
-            { !this.state.loading && this.state.authors.map((author) => (
-              <ListGroup.Item key={ "sectionitem"+author.id } action onClick={ () => this.props.onSelect(author) }>
+            { !this.state.loading && this.state.users.map((user) => (
+              <ListGroup.Item key={ "sectionitem"+user.id } action onClick={ () => this.props.onSelect(user) }>
                 <Stack direction="horizontal" gap={2}>
-                  { author.firstName } { author.lastName }
+                  { user.login }
                 </Stack>
               </ListGroup.Item>
             ))}

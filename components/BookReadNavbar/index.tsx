@@ -7,6 +7,7 @@ import { addBasePath } from 'next/dist/client/add-base-path';
 export enum NavigationPage {
   sections = '/sections',
   authors = '/authors',
+  users = '/users',
   templates = '/templates',
 }
 
@@ -14,6 +15,7 @@ export function NavigationPageDescr(type: NavigationPage): string {
   switch(type) {
     case NavigationPage.sections: return 'Разделы';
     case NavigationPage.authors: return 'Авторы';
+    case NavigationPage.users: return 'Пользователи';
     case NavigationPage.templates: return 'Шаблоны';
   }
 }

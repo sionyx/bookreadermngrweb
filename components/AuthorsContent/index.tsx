@@ -14,7 +14,7 @@ export class AuthorsContent extends Component<IAuthorsContentProps, object> {
       <ListGroup variant="flush">
         { this.props.authors && this.props.authors.map((author) => (
           <ListGroup.Item key={ "sectionitem"+author.id } action href={ addBasePath(`/authors/${ author.id }/edit`) }>
-            { author.firstName } { author.lastName }
+            { author.lastName } { author.firstName }
           </ListGroup.Item>
         ))}
       </ListGroup>

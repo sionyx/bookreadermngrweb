@@ -23,7 +23,7 @@ export class SectionContent extends Component<ISectionContentProps, object> {
         ))}
         { this.props.books && this.props.books.map((book) => (
           <ListGroup.Item key={ "bookitem"+book.id } action href={ addBasePath(`/books/${ book.id }`) }>
-            { book.title } ({ book.author } )
+            { book.title } (@{ book.user })
           </ListGroup.Item>
         ))}
       </ListGroup>
